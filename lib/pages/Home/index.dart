@@ -21,6 +21,11 @@ class _HomeViewState extends State<HomeView> {
     // BannerItem(id: "3", imgUrl:"https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/banner/xinnian_sj.png" )
   ];
   List<CategoryItem> _categoryList = [];
+  HomeRecommend homeRecommend = HomeRecommend(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
 
 
   List<Widget> _getScrollChildren (){
@@ -34,7 +39,7 @@ class _HomeViewState extends State<HomeView> {
         //间距组件
         SliverToBoxAdapter(child: SizedBox(height: 10,)),
 
-        SliverToBoxAdapter(child: Hmsuggestion(), ),
+        SliverToBoxAdapter(child: HmSuggestion(homeRecommend: homeRecommend,), ),
         //间距组件
         SliverToBoxAdapter(child: SizedBox(height: 10,)),
 
@@ -52,11 +57,14 @@ class _HomeViewState extends State<HomeView> {
         HmMoreList()
       ];
   }
+  
   @override
   void initState() {
     // TODO: implement initState
+    super.initState();
     _getBannederList();
     _getCategoryList();
+    _getHomeRecommendList();
   }
   void _getBannederList() async{
     _bannerList = await getBannerListAPI();
@@ -67,6 +75,13 @@ class _HomeViewState extends State<HomeView> {
   //获取分类列表
   void _getCategoryList() async{
     _categoryList = await getCategoryListAPI();
+    setState(() {
+      
+    });
+  }
+  //获取特惠推荐结果
+  void _getHomeRecommendList() async{
+    homeRecommend = await getHomeRecommendListAPI();
     setState(() {
       
     });

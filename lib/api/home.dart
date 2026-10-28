@@ -18,3 +18,10 @@ Future<List<CategoryItem>> getCategoryListAPI() async {
   return  CategoryItem.fromJSON(item as Map<String,dynamic>);
   }).toList();
 }
+//HomeRecommend 特惠推荐结果
+Future<HomeRecommend> getHomeRecommendListAPI() async {
+  //返回请求
+  return  HomeRecommend.fromJSON(
+    await dioRequest.get(HttpConstants.PRODUCT_LIST)
+  );
+}
