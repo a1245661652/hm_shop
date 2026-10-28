@@ -26,7 +26,18 @@ class _HomeViewState extends State<HomeView> {
     title: "",
     subTypes: [],
   );
-
+  SpecialRecommendResult _inVogueResult = SpecialRecommendResult(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  SpecialRecommendResult _oneStopResult = SpecialRecommendResult(
+    id: "",
+    title: "",
+    subTypes: [],
+  );
+  // 推荐列表
+  List<GoodDetailItem> _recommendList = [];
 
   List<Widget> _getScrollChildren (){
       return [
@@ -48,13 +59,16 @@ class _HomeViewState extends State<HomeView> {
             padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
               child:  Flex(
                 direction: Axis.horizontal,
-                children: [Expanded(child: HmHot()) ,SizedBox(width: 10,),Expanded(child: HmHot()) ],
+                children: [
+                 Expanded(child:HmHot(result: _inVogueResult,type:"hot")) ,
+                 SizedBox(width: 10,),
+                 Expanded(child: HmHot(result: _oneStopResult,type:"step")) ],
               ),
             )
         ),
         //间距组件
         SliverToBoxAdapter(child: SizedBox(height: 10,)),
-        HmMoreList()
+        HmMoreList(recommendList: _recommendList), 
       ];
   }
   
@@ -65,6 +79,9 @@ class _HomeViewState extends State<HomeView> {
     _getBannederList();
     _getCategoryList();
     _getHomeRecommendList();
+    _getInVogueList();
+    _getOneStopList();
+    _getRecommendList();
   }
   void _getBannederList() async{
     _bannerList = await getBannerListAPI();
@@ -85,6 +102,25 @@ class _HomeViewState extends State<HomeView> {
     setState(() {
       
     });
+  }
+  //获取爆款推荐列表
+  void _getInVogueList() async{
+    _inVogueResult = await getInVogueListAPI();
+    setState(() {
+      
+    });
+  }
+  //获取一站买全列表
+  void _getOneStopList() async{
+    _oneStopResult = await getOneStopListAPI();
+    setState(() {
+      
+    });
+  }
+  // 获取推荐列表
+  void _getRecommendList() async {
+    _recommendList = await getRecommendListAPI({"limit": 10});
+    setState(() {});
   }
   @override
   Widget build(BuildContext context) {
