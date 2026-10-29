@@ -5,6 +5,7 @@ import 'package:hm_shop/components/Home/HmHot.dart';
 import 'package:hm_shop/components/Home/HmMoreList.dart';
 import 'package:hm_shop/components/Home/HmSlider.dart';
 import 'package:hm_shop/components/Home/HmSuggestion.dart';
+import 'package:hm_shop/utils/ToastUtils.dart';
 import 'package:hm_shop/viewmodels/home.dart';
 
 class HomeView extends StatefulWidget {
@@ -38,7 +39,11 @@ class _HomeViewState extends State<HomeView> {
   );
   // 推荐列表
   List<GoodDetailItem> _recommendList = [];
-
+  //页码
+  int _page = 1;
+  int _limit = 10;
+  bool _isLoading = false;//是否正在加载
+  bool _hasMore = true;//是否还有下一页
   List<Widget> _getScrollChildren (){
       return [
         //包裹普通widget的sliver家族的组件
@@ -76,57 +81,101 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _getBannederList();
-    _getCategoryList();
-    _getHomeRecommendList();
-    _getInVogueList();
-    _getOneStopList();
-    _getRecommendList();
-  }
-  void _getBannederList() async{
-    _bannerList = await getBannerListAPI();
-    setState(() {
-      
+    _registerScrollController();
+    // _getBannederList();
+    // _getCategoryList();
+    // _getHomeRecommendList();
+    // _getInVogueList();
+    // _getOneStopList();
+    // _getRecommendList();
+    Future.microtask((){
+      _paddingTop = 100;
+      setState(() {
+      });
+      _globalKey.currentState?.show();
     });
+  }
+  //监听滚动刀到底部的事件
+  void _registerScrollController(){
+    _scrollController.addListener(() {
+        if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100){
+          print("到底了");
+          _getRecommendList();
+        }
+    });
+  }
+  Future<void> _getBannederList() async{
+    _bannerList = await getBannerListAPI();
+    
   }
   //获取分类列表
-  void _getCategoryList() async{
+  Future<void> _getCategoryList() async{
     _categoryList = await getCategoryListAPI();
-    setState(() {
-      
-    });
+   
   }
   //获取特惠推荐结果
-  void _getHomeRecommendList() async{
+  Future<void> _getHomeRecommendList() async{
     homeRecommend = await getHomeRecommendListAPI();
-    setState(() {
-      
-    });
+    
   }
   //获取爆款推荐列表
-  void _getInVogueList() async{
+  Future<void> _getInVogueList() async{
     _inVogueResult = await getInVogueListAPI();
-    setState(() {
-      
-    });
+   
   }
   //获取一站买全列表
-  void _getOneStopList() async{
+  Future<void> _getOneStopList() async{
     _oneStopResult = await getOneStopListAPI();
-    setState(() {
-      
-    });
+    
   }
   // 获取推荐列表
-  void _getRecommendList() async {
-    _recommendList = await getRecommendListAPI({"limit": 10});
+  Future<void> _getRecommendList() async {
+    //如果正在加载或者没有下一页了，就不加载了
+    if(_isLoading || !_hasMore){
+      return;
+    }
+    _isLoading = true;
+    _limit = _page * 10;
+    _recommendList = await getRecommendListAPI({"limit": _limit});
     setState(() {});
+    _isLoading = false;
+    _hasMore = homeRecommend.subTypes.isNotEmpty;
+    print(_hasMore);
+    _page++;
+    
   }
+  Future<void> _refresh() async {
+    _page = 1;
+    _limit = 10;
+    _hasMore = true;
+    await _getBannederList();
+    await _getCategoryList();
+    await _getHomeRecommendList();
+    await _getInVogueList();
+    await _getOneStopList();
+    await _getRecommendList();
+    setState(() {
+      ToastUtils.showToast(context,"刷新成功",2);
+      _paddingTop = 0;  
+      setState(() {
+      });
+    });
+  }
+  final ScrollController _scrollController = new ScrollController();
+  final GlobalKey<RefreshIndicatorState> _globalKey = GlobalKey<RefreshIndicatorState>();
+  double _paddingTop = 0;
   @override
   Widget build(BuildContext context) {
-    return Center(
-       child: CustomScrollView(
+    return RefreshIndicator(
+      key: _globalKey,
+      onRefresh: _refresh,
+       child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        padding: EdgeInsets.only(top: _paddingTop),
+        child: CustomScrollView(
         slivers: _getScrollChildren(),
+        controller: _scrollController,
+       ),
        ),
     );
   }
