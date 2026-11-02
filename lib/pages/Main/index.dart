@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hm_shop/pages/Cart/index.dart';
 import 'package:hm_shop/pages/Category/index.dart';
-import 'package:hm_shop/pages/Home/indexwwwwwwwwwww.dart';
+import 'package:hm_shop/pages/Home/index.dart';
 import 'package:hm_shop/pages/My/index.dart';
 
 class MainPage extends StatefulWidget {
