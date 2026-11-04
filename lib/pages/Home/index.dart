@@ -155,7 +155,7 @@ class _HomeViewState extends State<HomeView> {
     await _getOneStopList();
     await _getRecommendList();
     setState(() {
-      ToastUtils.showToast(context,"刷新成功",2);
+      ToastUtils.showToast(context);
       _paddingTop = 0;  
       setState(() {
       });
