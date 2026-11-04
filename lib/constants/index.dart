@@ -13,5 +13,6 @@ class HttpConstants {
   static const String ONE_STOP_LIST = "/hot/oneStop";//一站买全列表
   static const String RECOMMEND_LIST = "/home/recommend";//特惠推荐列表
   static const String GUESS_LIST = "/home/goods/guessLike";//猜你喜欢列表
+  static const String LOGIN = "/login";//登录接口
 }
  

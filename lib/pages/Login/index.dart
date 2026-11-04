@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hm_shop/api/user.dart';
+import 'package:hm_shop/stores/UserController.dart';
 import 'package:hm_shop/utils/ToastUtils.dart';
 
 class LoginPage extends StatefulWidget {
@@ -11,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _phoneController = TextEditingController(); // 账号控制器
   TextEditingController _codeController = TextEditingController(); // 密码控制器
+  final UserController _userController = Get.find();
   // 用户账号Widget
   Widget _buildPhoneTextField() {
     return TextFormField(
@@ -64,7 +69,21 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
+  void _login() async{
+    try{
+      final res = await loginApi({
+        "account":_phoneController.text,
+        "password":_codeController.text,
+      });
+      //登录成功后 保存用户信息
+      _userController.updateUserInfo(res);
+      ToastUtils.showToast(context,"登录成功");
+      //登录成功后 跳转到首页
+      Navigator.pop(context);
+    }catch(e){
+      ToastUtils.showToast(context,(e as DioException).message ?? "登录失败");
+    }
+  }
   // 登录按钮Widget
   Widget _buildLoginButton() {
     return SizedBox(
@@ -75,7 +94,9 @@ class _LoginPageState extends State<LoginPage> {
           // 登录逻辑
           if(_formKey.currentState?.validate() ?? false){
             //判断勾选框
-            if(!_isChecked){
+            if(_isChecked){
+              _login();
+            }else{
               ToastUtils.showToast(context,"请勾选用户协议");
               return;
             }

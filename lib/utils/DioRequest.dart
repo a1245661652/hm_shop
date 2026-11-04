@@ -1,5 +1,6 @@
 //基于Dio进行二次封装
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:hm_shop/constants/index.dart';
 
 class DioRequest{
@@ -7,9 +8,12 @@ class DioRequest{
   //基础地址拦截器
   DioRequest(){
     _dio.options..baseUrl = GlobalConstants.BASE_URL
-    ..connectTimeout = Duration(seconds: GlobalConstants.TIME_OUT) 
-    ..sendTimeout = Duration(seconds: GlobalConstants.TIME_OUT) 
+    ..connectTimeout = Duration(seconds: GlobalConstants.TIME_OUT)
     ..receiveTimeout = Duration(seconds: GlobalConstants.TIME_OUT);
+    //Web端sendTimeout仅对有请求体的请求生效，GET无body会触发警告，故仅在非Web平台设置
+    if (!kIsWeb) {
+      _dio.options.sendTimeout = Duration(seconds: GlobalConstants.TIME_OUT);
+    }
     _addInterceptor();
   }
   //添加拦截器
@@ -27,12 +31,17 @@ class DioRequest{
           handler.reject(DioException(requestOptions: response.requestOptions));
       },
       onError: (error,handler){
-        handler.reject(error);
+        handler.reject(DioException(requestOptions: error.requestOptions,message: error.response?.data["msg"] ?? "请求失败"));
       }
     ));
   }
-  get (String url,{Map<String,dynamic>? params}){
+  //get请求
+  Future<dynamic>  get (String url,{Map<String,dynamic>? params}){
      return _handleResponse(_dio.get(url,queryParameters: params));
+  }
+  //post请求
+  Future<dynamic>  post (String url,{Map<String,dynamic>? data}){
+     return _handleResponse(_dio.post(url,data: data));
   }
   //进一步处理返回结果的函数
   _handleResponse(Future<Response<dynamic>> task) async{
@@ -44,9 +53,9 @@ class DioRequest{
         return data["result"];//只要result结果
       }
       //抛出异常
-      throw Exception(data["msg"] ?? "加载数据异常");
+      throw DioException(requestOptions: res.requestOptions,message: data["msg"] ?? "加载数据异常");
     }catch(e){
-      throw Exception(e);
+      rethrow;
     }
   } 
 }

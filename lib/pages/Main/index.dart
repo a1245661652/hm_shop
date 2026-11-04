@@ -12,6 +12,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+
   List<Map<String,String>> bottomNavigationBarItems = [
     {
       "icon":"lib/assets/ic_public_home_normal.png",
