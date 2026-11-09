@@ -42,19 +42,19 @@ class _HmsuggestionState extends State<HmSuggestion> {
   List<Widget> _getChildrenlist(){
     List<GoodsItem> list = _getDisplayItems();
     return List.generate(list.length,(int index){
-      return Column(
+      return Expanded(
+      child:
+      Column(
         children: [
           ClipRRect(
             borderRadius:BorderRadius.circular(8),
             child:  Image.network(
               errorBuilder:(context,error,stackTrace){
                 return Image.asset("lib/assets/home_cmd_inner.png",
-                width: 100,
                 height: 140,
                 fit: BoxFit.cover,);
               },
               list[index].picture,
-              width: 100,
               height: 140,
               fit: BoxFit.cover,
               ),
@@ -69,6 +69,7 @@ class _HmsuggestionState extends State<HmSuggestion> {
             child: Text("¥${list[index].price}",style: TextStyle(color: Colors.white)),
           )
         ],
+      )
       );
     });
   }
@@ -93,8 +94,12 @@ class _HmsuggestionState extends State<HmSuggestion> {
           height: 10,
         ),
         Row(
-          children: [_buildLeft(),Expanded(child:Row(
+          children: [
+          _buildLeft(),
+          SizedBox(width: 10,),
+          Expanded(child:Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            spacing: 10,
             children: _getChildrenlist(),
           ))],
         )],

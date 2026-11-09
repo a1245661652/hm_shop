@@ -31,8 +31,8 @@ class _HmHotState extends State<HmHot> {
   //获取子组件
   List<Widget> _getChildrenList(List<GoodsItem> list){
     return list.map((e) {
-      return Container(
-        width: 80,
+      return Expanded(child:  Container(
+        //width: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12)
         ),
@@ -43,7 +43,7 @@ class _HmHotState extends State<HmHot> {
                   borderRadius: BorderRadius.circular(12),
                   child:Image.network(
                     e.picture,
-                    width: 80,
+                    //width: 80,
                     height: 100,
                     fit: BoxFit.cover,
                     errorBuilder:(context, error, stackTrace) {
@@ -53,9 +53,9 @@ class _HmHotState extends State<HmHot> {
                 ),
                 SizedBox(height: 5,),
                 Text("￥${e.price}",style: TextStyle(color: Color.fromARGB(255, 86, 24, 20),fontSize: 12,)),
-        ]
+         ]
         ),
-    );
+    ));
     }).toList();
   }
 
@@ -76,6 +76,7 @@ class _HmHotState extends State<HmHot> {
           SizedBox(height: 10,),
            Container(
               child: Row(
+              spacing: 10,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
               children:_getChildrenList(list),
             ),
