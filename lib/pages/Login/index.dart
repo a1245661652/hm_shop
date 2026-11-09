@@ -2,8 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hm_shop/api/user.dart';
+import 'package:hm_shop/stores/TokenManager.dart';
 import 'package:hm_shop/stores/UserController.dart';
 import 'package:hm_shop/utils/ToastUtils.dart';
+import 'package:hm_shop/utils/loadingDialog.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -71,12 +73,15 @@ class _LoginPageState extends State<LoginPage> {
   }
   void _login() async{
     try{
+      Loadingdialog.show(context,"努力登录中...");
       final res = await loginApi({
         "account":_phoneController.text,
         "password":_codeController.text,
       });
       //登录成功后 保存用户信息
       _userController.updateUserInfo(res);
+      tokenManager.setToken(res.token);
+      Loadingdialog.hide(context);
       ToastUtils.showToast(context,"登录成功");
       //登录成功后 跳转到首页
       Navigator.pop(context);
