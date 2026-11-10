@@ -83,12 +83,11 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
+      body: IndexedStack(
           children: _getChildren(),
           index:_currentindex
         ),
-      ),
+      
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black,
